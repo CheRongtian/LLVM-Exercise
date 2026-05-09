@@ -1,22 +1,9 @@
-#include <iostream>
+#include "lexer.hpp"
 
-enum Token
-{
-    tok_eof = -1,
-    
-    // commands
-    tok_def = -2,
-    tok_extern = -3,
+std::string IdentifierStr;
+double NumVal;
 
-    // primary
-    tok_identifier = -4,
-    tok_number = -5
-};
-
-static std::string IdentifierStr;
-static double NumVal;
-
-static int gettok()
+int gettok()
 {
     static int LastChar = ' ';
     // skip white
@@ -65,15 +52,4 @@ static int gettok()
     int ThisChar = LastChar;
     LastChar = getchar();
     return ThisChar;
-}
-
-int main()
-{
-    int Tok;
-    do
-    {
-        Tok = gettok();
-        std::cout << Tok << std::endl;
-    }while(Tok!=tok_eof);
-    return 0;
 }

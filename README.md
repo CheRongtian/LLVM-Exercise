@@ -17,12 +17,19 @@ Projects/
 │   └── llvm/
 │
 └── KaleidoscopeExercise/                 
-    ├── CMakeLists.txt          
-    └── test.cpp                
+    ├── Environment Test/ # put these files into a folder to do the environment test
+    │   ├── CMakeLists.txt   
+    │   ├── test.sh       
+    │   └── test.cpp            
+    ├── AST.cpp
+    └── ...         
 ```
-
+For the Environment Test/
 do:
 ```bash
+cd projects
+cd KaleidoscopeExercise
+cd "Environment Test"
 chmod +x test.sh
 ./test.sh
 ```
@@ -30,4 +37,27 @@ chmod +x test.sh
 you should see the output like:
 ```
 LLVM Context created successfully! Environment is ready.
+```
+
+For the rest components:
+do
+```bash
+cd projects
+cd KaleidoscopeExercise
+mkdir build
+cd build
+cmake ..
+make
+./KaleidoscopeExercise
+```
+and you can get output like:
+```
+ready> def foo(x y) x+y y
+ready> Parsed a function defition.
+ready> def foo(x y) x+y );
+Parsed a top-level expr.
+ready> Parsed a function defition.
+ready> Error: unknown token when expecting an expression
+ready> extern sin(a);
+ready> Parsed an extern.
 ```
