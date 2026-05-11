@@ -1,10 +1,6 @@
 #ifndef CODEGEN_HPP
 #define CODEGEN_HPP
 
-#include "AST.hpp"
-#include "lexer.hpp"
-#include "parser.hpp"
-
 #include "llvm/ADT/APFloat.h"
 #include "llvm/ADT/STLExtras.h"
 #include "llvm/IR/BasicBlock.h"
@@ -18,5 +14,10 @@
 #include "llvm/IR/Verifier.h"
 
 using namespace llvm;
+
+extern std::unique_ptr<LLVMContext> TheContext;
+extern std::unique_ptr<Module> TheModule;
+extern std::unique_ptr<IRBuilder<>> Builder;
+extern std::map<std::string, Value*> NamedValues;
 
 #endif

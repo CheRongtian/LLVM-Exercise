@@ -7,10 +7,19 @@
 #include <utility>
 #include <map>
 
+namespace llvm
+{
+    class Value;
+    class Function;
+}
+
+using namespace llvm;
+
 class ExprAST
 {
     public:
         virtual ~ExprAST() = default;
+        virtual Value *codegen() = 0;
 };
 
 class NumberExprAST : public ExprAST
@@ -18,6 +27,8 @@ class NumberExprAST : public ExprAST
     double Val;
     public:
         NumberExprAST(double Val) : Val(Val){}
+
+        Value* codegen() override;
 };
 
 class VariableExprAST : public ExprAST
@@ -25,6 +36,8 @@ class VariableExprAST : public ExprAST
     std::string Name;
     public:
         VariableExprAST(const std::string &Name) : Name(Name){}
+
+        Value* codegen() override;
 };
 
 class BinaryExprAST : public ExprAST
@@ -35,6 +48,8 @@ class BinaryExprAST : public ExprAST
     public:
         BinaryExprAST(char Op, std::unique_ptr<ExprAST> LHS, std::unique_ptr<ExprAST> RHS) :
             Op(Op), LHS(std::move(LHS)), RHS(std::move(RHS)){}
+
+        Value* codegen() override;
 };
 
 class CallExprAST : public ExprAST
@@ -45,6 +60,8 @@ class CallExprAST : public ExprAST
     public:
         CallExprAST(const std::string &Callee, std::vector<std::unique_ptr<ExprAST>> Args) :
             Callee(Callee), Args(std::move(Args)){}
+
+        Value* codegen() override;
 };
 
 class PrototypeAST
@@ -55,6 +72,12 @@ class PrototypeAST
     public:
         PrototypeAST(const std::string &Name, std::vector<std::string> Args) :
             Name(Name), Args(std::move(Args)){}
+        std::string getName()
+        {
+            return Name;
+        }
+
+    Function *codegen();
 };
 
 class FunctionAST
@@ -65,6 +88,8 @@ class FunctionAST
     public:
         FunctionAST(std::unique_ptr<PrototypeAST> Proto, std::unique_ptr<ExprAST> Body) :
             Proto(std::move(Proto)), Body(std::move(Body)){}
+    
+    Function *codegen();
 };
 
 #endif

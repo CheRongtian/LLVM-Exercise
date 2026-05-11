@@ -1,20 +1,57 @@
+#include "AST.hpp"
+#include "lexer.hpp"
+#include "parser.hpp"
 #include "TopLevel.hpp"
+#include "codegen.hpp"
+
+void InitializeModule()
+{
+    TheContext = std::make_unique<LLVMContext>();
+    TheModule = std::make_unique<Module>("My cool jit", *TheContext);
+    Builder = std::make_unique<IRBuilder<>>(*TheContext);
+}
 
 void HandleDefinition()
 {
-    if(ParseDefinition()) fprintf(stderr, "Parsed a function defition.\n");
+    if(auto FnAST = ParseDefinition()) 
+    {
+        if(auto *FnIR = FnAST->codegen())
+        {
+            fprintf(stderr, "Parsed a function defition.");
+            FnIR->print(errs());
+            fprintf(stderr, "\n");
+        }  
+    }
     else getNextToken();
 }
 
 void HandleExtern()
 {
-    if(ParseExtern()) fprintf(stderr, "Parsed an extern.\n");
+    if(auto ProtoAST = ParseExtern())
+    {
+        if(auto *FnIR = ProtoAST->codegen())
+        {
+            fprintf(stderr, "Read extern.");
+            FnIR->print(errs());
+            fprintf(stderr, "\n");
+        }
+    }
     else getNextToken();
 }
 
 void HandleTopLevelExpression()
 {
-    if(ParseTopLevelExpr()) fprintf(stderr, "Parsed a top-level expr.\n");
+    if(auto FnAST = ParseTopLevelExpr())
+    {
+        if(auto *FnIR = FnAST->codegen())
+        {
+            fprintf(stderr, "Read top-level expression:");
+            FnIR->print(errs());
+            fprintf(stderr, "\n");
+            // remove an anonymous expression
+            FnIR->eraseFromParent();
+        }
+    }
     else getNextToken();
 }
 

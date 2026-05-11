@@ -1,3 +1,5 @@
+# LLVM Project
+## Basic Preparation
 After git clone llvm-project:
 ```bash
 # build
@@ -9,6 +11,7 @@ cmake --build build --target check-all
 # install (optional)
 cmake --install build
 ```
+### Structure
 Then you can get:
 ```css
 Projects/
@@ -24,6 +27,7 @@ Projects/
     ├── AST.cpp
     └── ...         
 ```
+## Environment Test
 For the Environment Test/
 do:
 ```bash
@@ -38,7 +42,8 @@ you should see the output like:
 ```
 LLVM Context created successfully! Environment is ready.
 ```
-
+## Customed Part
+### For the only Frontend phase:
 For the rest components:
 do
 ```bash
@@ -60,4 +65,34 @@ ready> Parsed a function defition.
 ready> Error: unknown token when expecting an expression
 ready> extern sin(a);
 ready> Parsed an extern.
+```
+
+### IR Phase
+```bash
+cd projects
+cd KaleidoscopeExercise
+chmod +x run.sh
+./run.sh
+```
+
+then you can do like:
+```
+ready> 4+5;
+ready> Read top-level expression:define double @__anon_expr() {
+entry:
+  ret double 9.000000e+00
+}
+
+ready> def foo(a b) a*a + 2*a*b + b*b;
+ready> Parsed a function defition.define double @foo(double %a, double %b) {
+entry:
+  %multmp = fmul double %a, %a
+  %multmp1 = fmul double 2.000000e+00, %a
+  %multmp2 = fmul double %multmp1, %b
+  %addtmp = fadd double %multmp, %multmp2
+  %multmp3 = fmul double %b, %b
+  %addtmp4 = fadd double %addtmp, %multmp3
+  ret double %addtmp4
+}
+
 ```

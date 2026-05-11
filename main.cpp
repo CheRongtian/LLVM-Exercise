@@ -2,6 +2,7 @@
 #include "AST.hpp"
 #include "parser.hpp"
 #include "TopLevel.hpp"
+#include "codegen.hpp"
 
 int main()
 {
@@ -22,7 +23,12 @@ int main()
 
    fprintf(stderr, "ready> ");
    getNextToken();
+
+   InitializeModule();
+   
    MainLoop();
-   return 0;
-    
+   
+   TheModule->print(errs(), nullptr);
+
+   return 0; 
 }

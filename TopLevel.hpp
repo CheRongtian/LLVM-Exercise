@@ -1,9 +1,7 @@
 #ifndef TOPLEVEL_HPP
 #define TOPLEVEL_HPP
 
-#include "AST.hpp"
-#include "lexer.hpp"
-#include "parser.hpp"
+void InitializeModule();
 
 void HandleDefinition();
 
