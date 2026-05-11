@@ -8,6 +8,14 @@ std::unique_ptr<Module> TheModule;
 std::unique_ptr<IRBuilder<>> Builder;
 std::map<std::string, Value*> NamedValues;
 
+std::unique_ptr<FunctionPassManager> TheFPM;
+std::unique_ptr<LoopAnalysisManager> TheLAM;
+std::unique_ptr<FunctionAnalysisManager> TheFAM;
+std::unique_ptr<CGSCCAnalysisManager> TheCGAM;
+std::unique_ptr<ModuleAnalysisManager> TheMAM;
+std::unique_ptr<PassInstrumentationCallbacks> ThePIC;
+std::unique_ptr<StandardInstrumentations> TheSI;
+
 Value *LogErrorV(const char *Str)
 {
     LogError(Str);
@@ -89,6 +97,8 @@ Function *FunctionAST::codegen()
     {
         Builder->CreateRet(RetVal);
         verifyFunction(*TheFunction);
+
+        TheFPM->run(*TheFunction, *TheFAM);
         return TheFunction;
     }
 

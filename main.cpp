@@ -24,7 +24,7 @@ int main()
    fprintf(stderr, "ready> ");
    getNextToken();
 
-   InitializeModule();
+   InitializeModuleAndManagers();
    
    MainLoop();
    

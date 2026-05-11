@@ -94,5 +94,31 @@ entry:
   %addtmp4 = fadd double %addtmp, %multmp3
   ret double %addtmp4
 }
-
 ```
+
+### PASS Phase
+Similarly, you can get:
+#### Before PASS
+```
+ready> def test(x) (1+2+x)*(x+(1+2));
+ready> Parsed a function defition.define double @test(double %x) {
+entry:
+  %addtmp = fadd double 3.000000e+00, %x
+  %addtmp1 = fadd double %x, 3.000000e+00
+  %multmp = fmul double %addtmp, %addtmp
+  ret double %multmp
+}
+```
+
+#### After PASS
+```
+ready> def test(x) (1+2+x)*(x+(1+2));
+ready> Parsed a function defition.define double @test(double %x) {
+entry:
+  %addtmp = fadd double %x, 3.000000e+00
+  %multmp = fmul double %addtmp, %addtmp
+  ret double %multmp
+}
+```
+
+You can see the difference here

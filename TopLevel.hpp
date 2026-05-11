@@ -1,7 +1,7 @@
 #ifndef TOPLEVEL_HPP
 #define TOPLEVEL_HPP
 
-void InitializeModule();
+void InitializeModuleAndManagers();
 
 void HandleDefinition();
 
