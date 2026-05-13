@@ -129,3 +129,60 @@ entry:
 ```
 
 You can see the difference here
+
+### JIT Part
+
+Similarly, you can get:
+```
+ready> def inc(x) x+1;
+ready> Parsed a function defition.define double @inc(double %x) {
+entry:
+  %addtmp = fadd double %x, 1.000000e+00
+  ret double %addtmp
+}
+
+ready> inc (2);   
+ready> Evaluated to 3.000000
+ready> extern sin(x);
+ready> Read extern.declare double @sin(double)
+
+ready> sin(1);
+ready> Evaluated to 0.841471
+ready> extern cos(x);
+ready> Read extern.declare double @cos(double)
+
+ready> cos(1);
+ready> Evaluated to 0.540302
+ready> def foo(x) sin(x)*sin(x)+cos(x)*cos(x);
+ready> Parsed a function defition.define double @foo(double %x) {
+entry:
+  %calltmp = call double @sin(double %x)
+  %calltmp1 = call double @sin(double %x)
+  %multmp = fmul double %calltmp, %calltmp1
+  %calltmp2 = call double @cos(double %x)
+  %calltmp3 = call double @cos(double %x)
+  %multmp4 = fmul double %calltmp2, %calltmp3
+  %addtmp = fadd double %multmp, %multmp4
+  ret double %addtmp
+}
+
+ready> foo(4);
+ready> Evaluated to 1.000000
+```
+```
+ready> extern putchard(char);
+ready> Read extern.declare double @putchard(double)
+
+ready> putchard(45);
+ready> -Evaluated to 0.000000
+ready> putchard(65);
+ready> AEvaluated to 0.000000
+ready> putchard(75);
+ready> KEvaluated to 0.000000
+```
+
+The process:
+```
+lexer -> parser -> AST -> IR -> PASS -> JIT Machine Code
+```
+has been completed.

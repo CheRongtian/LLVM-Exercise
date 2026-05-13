@@ -3,6 +3,7 @@
 #include "parser.hpp"
 #include "TopLevel.hpp"
 #include "codegen.hpp"
+#include "JITLib.hpp"
 
 int main(int argc, char **argv)
 {
@@ -23,6 +24,10 @@ int main(int argc, char **argv)
         fprintf(stderr, "Optimization disabled.\n");
     }
 
+    InitializeNativeTarget();
+    InitializeNativeTargetAsmPrinter();
+    InitializeNativeTargetAsmParser();
+
     BinopPrecedence['<'] = 10;
     BinopPrecedence['+'] = 20;
     BinopPrecedence['-'] = 30;
@@ -31,6 +36,14 @@ int main(int argc, char **argv)
     fprintf(stderr, "ready> ");
     getNextToken();
 
+    TheJIT = ExitOnErr(KaleidoscopeJIT::Create());
+    auto G = cantFail(
+        llvm::orc::DynamicLibrarySearchGenerator::GetForCurrentProcess(
+            TheJIT->getDataLayout().getGlobalPrefix()
+        )
+    );
+    TheJIT->getMainJITDylib().addGenerator(std::move(G));
+    
     InitializeModuleAndManagers();
    
     MainLoop();

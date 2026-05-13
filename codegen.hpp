@@ -23,7 +23,10 @@
 #include "llvm/Transforms/Scalar/Reassociate.h"
 #include "llvm/Transforms/Scalar/SimplifyCFG.h"
 
+#include "KaleidoscopeJIT.hpp"
+
 using namespace llvm;
+using namespace llvm::orc;
 
 extern std::unique_ptr<LLVMContext> TheContext;
 extern std::unique_ptr<Module> TheModule;
@@ -37,6 +40,10 @@ extern std::unique_ptr<CGSCCAnalysisManager> TheCGAM;
 extern std::unique_ptr<ModuleAnalysisManager> TheMAM;
 extern std::unique_ptr<PassInstrumentationCallbacks> ThePIC;
 extern std::unique_ptr<StandardInstrumentations> TheSI;
+
+extern std::unique_ptr<KaleidoscopeJIT> TheJIT;
+extern ExitOnError ExitOnErr;
+extern std::map<std::string, std::unique_ptr<PrototypeAST>> FunctionProtos;
 
 extern bool EnableOptimization;
 #endif

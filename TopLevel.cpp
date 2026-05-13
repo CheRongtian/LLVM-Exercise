@@ -7,7 +7,8 @@
 void InitializeModuleAndManagers()
 {
     TheContext = std::make_unique<LLVMContext>();
-    TheModule = std::make_unique<Module>("My cool jit", *TheContext);
+    TheModule = std::make_unique<Module>("Kaleidoscope", *TheContext);
+    TheModule->setDataLayout(TheJIT->getDataLayout());
     Builder = std::make_unique<IRBuilder<>>(*TheContext);
 
     TheFPM = std::make_unique<FunctionPassManager>();
@@ -39,6 +40,9 @@ void HandleDefinition()
             fprintf(stderr, "Parsed a function defition.");
             FnIR->print(errs());
             fprintf(stderr, "\n");
+
+            ExitOnErr(TheJIT->addModule(ThreadSafeModule(std::move(TheModule), std::move(TheContext))));
+            InitializeModuleAndManagers();
         }  
     }
     else getNextToken();
@@ -53,6 +57,8 @@ void HandleExtern()
             fprintf(stderr, "Read extern.");
             FnIR->print(errs());
             fprintf(stderr, "\n");
+
+            FunctionProtos[ProtoAST->getName()] = std::move(ProtoAST);
         }
     }
     else getNextToken();
@@ -62,6 +68,7 @@ void HandleTopLevelExpression()
 {
     if(auto FnAST = ParseTopLevelExpr())
     {
+        /*
         if(auto *FnIR = FnAST->codegen())
         {
             fprintf(stderr, "Read top-level expression:");
@@ -69,6 +76,20 @@ void HandleTopLevelExpression()
             fprintf(stderr, "\n");
             // remove an anonymous expression
             FnIR->eraseFromParent();
+        }
+        */
+        if(FnAST->codegen())
+        {
+            auto RT = TheJIT->getMainJITDylib().createResourceTracker();
+            auto TSM = ThreadSafeModule(std::move(TheModule), std::move(TheContext));
+            ExitOnErr(TheJIT->addModule(std::move(TSM), RT));
+            InitializeModuleAndManagers();
+
+            auto ExprSymbol = ExitOnErr(TheJIT->lookup("__anon_expr"));
+            double(*FP)() = ExprSymbol.toPtr<double(*)()>();
+            fprintf(stderr, "Evaluated to %f\n", FP());
+
+            ExitOnErr(RT->remove());
         }
     }
     else getNextToken();

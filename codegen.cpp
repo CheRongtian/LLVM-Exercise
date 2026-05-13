@@ -18,9 +18,21 @@ std::unique_ptr<ModuleAnalysisManager> TheMAM;
 std::unique_ptr<PassInstrumentationCallbacks> ThePIC;
 std::unique_ptr<StandardInstrumentations> TheSI;
 
+std::unique_ptr<KaleidoscopeJIT> TheJIT;
+ExitOnError ExitOnErr;
+std::map<std::string, std::unique_ptr<PrototypeAST>> FunctionProtos;
+
 Value *LogErrorV(const char *Str)
 {
     LogError(Str);
+    return nullptr;
+}
+
+Function *getFunction(std::string Name)
+{
+    if(auto *F = TheModule->getFunction(Name)) return F;
+    auto FI = FunctionProtos.find(Name);
+    if(FI != FunctionProtos.end()) return FI->second->codegen();
     return nullptr;
 }
 
@@ -56,7 +68,7 @@ Value *BinaryExprAST::codegen()
 
 Value *CallExprAST::codegen()
 {
-    Function *CalleeF = TheModule->getFunction(Callee);
+    Function *CalleeF = getFunction(Callee);
     if(!CalleeF) return LogErrorV("Unknown function referenced");
 
     if(CalleeF->arg_size()!=Args.size()) return LogErrorV("Incorrect # arguements passed");
@@ -85,7 +97,9 @@ Function *PrototypeAST::codegen()
 
 Function *FunctionAST::codegen()
 {
-    Function *TheFunction = TheModule->getFunction(Proto->getName());
+    auto &P = *Proto;
+    FunctionProtos[Proto->getName()] = std::move(Proto);
+    Function *TheFunction = getFunction(P.getName());
 
     if(!TheFunction) TheFunction = Proto->codegen();
     if(!TheFunction) return nullptr;

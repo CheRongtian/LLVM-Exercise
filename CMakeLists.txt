@@ -12,7 +12,21 @@ message(STATUS "Using LLVMConfig.cmake in: ${LLVM_DIR}")
 include_directories(${LLVM_INCLUDE_DIRS})
 add_definitions(${LLVM_DEFINITIONS})
 
-llvm_map_components_to_libnames(llvm_libs Core Support Passes InstCombine ScalarOpts TransformUtils Analysis)
+llvm_map_components_to_libnames(llvm_libs 
+                                Core 
+                                Support 
+                                Passes 
+                                InstCombine 
+                                ScalarOpts 
+                                TransformUtils 
+                                Analysis 
+                                ExecutionEngine 
+                                OrcJIT 
+                                Object 
+                                native
+                                )
+
+list(REMOVE_DUPLICATES llvm_libs)
 
 add_executable(KaleidoscopeExercise
                 AST.cpp
@@ -21,11 +35,14 @@ add_executable(KaleidoscopeExercise
                 parser.cpp
                 TopLevel.cpp
                 codegen.cpp
+                JITLib.cpp
                 AST.hpp
                 parser.hpp
                 lexer.hpp
                 TopLevel.hpp
                 codegen.hpp
+                JITLib.hpp
+                KaleidoscopeJIT.hpp
                 )
 
 target_link_libraries(KaleidoscopeExercise ${llvm_libs})
