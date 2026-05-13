@@ -38,4 +38,5 @@ extern std::unique_ptr<ModuleAnalysisManager> TheMAM;
 extern std::unique_ptr<PassInstrumentationCallbacks> ThePIC;
 extern std::unique_ptr<StandardInstrumentations> TheSI;
 
+extern bool EnableOptimization;
 #endif

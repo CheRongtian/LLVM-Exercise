@@ -8,6 +8,8 @@ std::unique_ptr<Module> TheModule;
 std::unique_ptr<IRBuilder<>> Builder;
 std::map<std::string, Value*> NamedValues;
 
+bool EnableOptimization = true;
+
 std::unique_ptr<FunctionPassManager> TheFPM;
 std::unique_ptr<LoopAnalysisManager> TheLAM;
 std::unique_ptr<FunctionAnalysisManager> TheFAM;
@@ -98,7 +100,8 @@ Function *FunctionAST::codegen()
         Builder->CreateRet(RetVal);
         verifyFunction(*TheFunction);
 
-        TheFPM->run(*TheFunction, *TheFAM);
+        if(EnableOptimization)
+            TheFPM->run(*TheFunction, *TheFAM);
         return TheFunction;
     }
 

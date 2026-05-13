@@ -4,7 +4,7 @@
 #include "TopLevel.hpp"
 #include "codegen.hpp"
 
-int main()
+int main(int argc, char **argv)
 {
     /*
     Just for lexer part:
@@ -16,19 +16,26 @@ int main()
     }while(Tok!=tok_eof);
     return 0;
     */
-   BinopPrecedence['<'] = 10;
-   BinopPrecedence['+'] = 20;
-   BinopPrecedence['-'] = 30;
-   BinopPrecedence['*'] = 40;
+    
+    if(argc>1 && std::string(argv[1]) == "off")
+    {
+        EnableOptimization = false;
+        fprintf(stderr, "Optimization disabled.\n");
+    }
 
-   fprintf(stderr, "ready> ");
-   getNextToken();
+    BinopPrecedence['<'] = 10;
+    BinopPrecedence['+'] = 20;
+    BinopPrecedence['-'] = 30;
+    BinopPrecedence['*'] = 40;
 
-   InitializeModuleAndManagers();
+    fprintf(stderr, "ready> ");
+    getNextToken();
+
+    InitializeModuleAndManagers();
    
-   MainLoop();
+    MainLoop();
    
-   TheModule->print(errs(), nullptr);
+    TheModule->print(errs(), nullptr);
 
-   return 0; 
+    return 0; 
 }

@@ -96,16 +96,23 @@ entry:
 }
 ```
 
-### PASS Phase
+### PASS Phase (Add a swicth here)
 Similarly, you can get:
+Here you can use command like this use turn on/off the optimization(PASS)
+```bash
+./run.sh # default: use PASS
+# OR
+./run.sh off # do not use PASS
+```
 #### Before PASS
 ```
+Optimization disabled.
 ready> def test(x) (1+2+x)*(x+(1+2));
 ready> Parsed a function defition.define double @test(double %x) {
 entry:
   %addtmp = fadd double 3.000000e+00, %x
   %addtmp1 = fadd double %x, 3.000000e+00
-  %multmp = fmul double %addtmp, %addtmp
+  %multmp = fmul double %addtmp, %addtmp1
   ret double %multmp
 }
 ```
