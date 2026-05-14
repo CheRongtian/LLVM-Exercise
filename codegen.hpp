@@ -13,6 +13,8 @@
 #include "llvm/IR/Type.h"
 #include "llvm/IR/Verifier.h"
 
+#include "llvm/IR/Instructions.h"
+
 #include "llvm/Passes/PassBuilder.h"
 #include "llvm/Passes/StandardInstrumentations.h"
 #include "llvm/Support/TargetSelect.h"

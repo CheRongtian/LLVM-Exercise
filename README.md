@@ -186,3 +186,37 @@ The process:
 lexer -> parser -> AST -> IR -> PASS -> JIT Machine Code
 ```
 has been completed.
+
+### If
+
+```
+ready> def fib(x) if x<3 then 1 else fib(x-1) + fib(x-2);
+ready> Parsed a function defition.define double @fib(double %x) {
+entry:
+  %cmptmp = fcmp ult double %x, 3.000000e+00
+  br i1 %cmptmp, label %ifcont, label %else
+
+else:                                             ; preds = %entry
+  %subtmp = fadd double %x, -1.000000e+00
+  %calltmp = call double @fib(double %subtmp)
+  %subtmp1 = fadd double %x, -2.000000e+00
+  %calltmp2 = call double @fib(double %subtmp1)
+  %addtmp = fadd double %calltmp, %calltmp2
+  br label %ifcont
+
+ifcont:                                           ; preds = %entry, %else
+  %iftmp = phi double [ %addtmp, %else ], [ 1.000000e+00, %entry ]
+  ret double %iftmp
+}
+
+ready> fib(1);
+ready> Evaluated to 1.000000
+ready> fib(2);
+ready> Evaluated to 1.000000
+ready> fib(3);
+ready> Evaluated to 2.000000
+ready> fib(4);
+ready> Evaluated to 3.000000
+ready> fib(5);
+ready> Evaluated to 5.000000
+```

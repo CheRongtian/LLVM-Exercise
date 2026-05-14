@@ -28,7 +28,7 @@ class NumberExprAST : public ExprAST
     public:
         NumberExprAST(double Val) : Val(Val){}
 
-        Value* codegen() override;
+        Value *codegen() override;
 };
 
 class VariableExprAST : public ExprAST
@@ -37,7 +37,7 @@ class VariableExprAST : public ExprAST
     public:
         VariableExprAST(const std::string &Name) : Name(Name){}
 
-        Value* codegen() override;
+        Value *codegen() override;
 };
 
 class BinaryExprAST : public ExprAST
@@ -49,7 +49,7 @@ class BinaryExprAST : public ExprAST
         BinaryExprAST(char Op, std::unique_ptr<ExprAST> LHS, std::unique_ptr<ExprAST> RHS) :
             Op(Op), LHS(std::move(LHS)), RHS(std::move(RHS)){}
 
-        Value* codegen() override;
+        Value *codegen() override;
 };
 
 class CallExprAST : public ExprAST
@@ -61,7 +61,18 @@ class CallExprAST : public ExprAST
         CallExprAST(const std::string &Callee, std::vector<std::unique_ptr<ExprAST>> Args) :
             Callee(Callee), Args(std::move(Args)){}
 
-        Value* codegen() override;
+        Value *codegen() override;
+};
+
+class IfExprAST : public ExprAST
+{
+    std::unique_ptr<ExprAST> Cond, Then, Else;
+
+    public:
+        IfExprAST(std::unique_ptr<ExprAST> Cond, std::unique_ptr<ExprAST> Then, std::unique_ptr<ExprAST> Else) :
+            Cond(std::move(Cond)), Then(std::move(Then)), Else(std::move(Else)){}
+        
+        Value *codegen() override;
 };
 
 class PrototypeAST
