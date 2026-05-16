@@ -46,3 +46,5 @@ add_executable(KaleidoscopeExercise
                 )
 
 target_link_libraries(KaleidoscopeExercise ${llvm_libs})
+
+target_link_options(KaleidoscopeExercise PRIVATE "-Wl,-no_warn_duplicate_libraries")

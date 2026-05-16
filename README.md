@@ -220,3 +220,81 @@ ready> Evaluated to 3.000000
 ready> fib(5);
 ready> Evaluated to 5.000000
 ```
+
+### Loop
+```
+ready> extern putchard(char);
+ready> Read extern.declare double @putchard(double)
+
+ready> def printstar(n) for i=1, i<n,1.0 in putchard(42);
+ready> Parsed a function defition.define double @printstar(double %n) {
+entry:
+  br label %loop
+
+loop:                                             ; preds = %loop, %entry
+  %i = phi double [ 1.000000e+00, %entry ], [ %nextvar, %loop ]
+  %calltmp = call double @putchard(double 4.200000e+01)
+  %nextvar = fadd double %i, 1.000000e+00
+  %cmptmp = fcmp ult double %i, %n
+  br i1 %cmptmp, label %loop, label %afterloop
+
+afterloop:                                        ; preds = %loop
+  ret double 0.000000e+00
+}
+
+ready> printstar(36);
+ready> ************************************Evaluated to 0.000000
+ready> extern printd(val);
+ready> Read extern.declare double @printd(double)
+
+ready> def fib(x) if x<3 then 1 else fib(x-1) + fib(x-2);
+ready> Parsed a function defition.define double @fib(double %x) {
+entry:
+  %cmptmp = fcmp ult double %x, 3.000000e+00
+  br i1 %cmptmp, label %ifcont, label %else
+
+else:                                             ; preds = %entry
+  %subtmp = fadd double %x, -1.000000e+00
+  %calltmp = call double @fib(double %subtmp)
+  %subtmp1 = fadd double %x, -2.000000e+00
+  %calltmp2 = call double @fib(double %subtmp1)
+  %addtmp = fadd double %calltmp, %calltmp2
+  br label %ifcont
+
+ifcont:                                           ; preds = %entry, %else
+  %iftmp = phi double [ %addtmp, %else ], [ 1.000000e+00, %entry ]
+  ret double %iftmp
+}
+
+ready> def printfib(n) for i=1, i<n+1 in printd(fib(i));
+ready> Parsed a function defition.define double @printfib(double %n) {
+entry:
+  br label %loop
+
+loop:                                             ; preds = %loop, %entry
+  %i = phi double [ 1.000000e+00, %entry ], [ %nextvar, %loop ]
+  %calltmp = call double @fib(double %i)
+  %calltmp1 = call double @printd(double %calltmp)
+  %nextvar = fadd double %i, 1.000000e+00
+  %addtmp = fadd double %n, 1.000000e+00
+  %cmptmp = fcmp ult double %i, %addtmp
+  br i1 %cmptmp, label %loop, label %afterloop
+
+afterloop:                                        ; preds = %loop
+  ret double 0.000000e+00
+}
+
+ready> printfib(10);
+ready> 1.000000
+1.000000
+2.000000
+3.000000
+5.000000
+8.000000
+13.000000
+21.000000
+34.000000
+55.000000
+89.000000
+Evaluated to 0.000000
+```

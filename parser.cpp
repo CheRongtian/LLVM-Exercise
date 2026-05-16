@@ -109,11 +109,49 @@ std::unique_ptr<ExprAST> ParseIfExpr()
     return std::make_unique<IfExprAST>(std::move(Cond), std::move(Then), std::move(Else));
 }
 
+// forexpr
+//  := 'for identifier '=' expr ',' expr (',' expr)? 'in' expression
+std::unique_ptr<ExprAST> ParseForExpr()
+{
+    getNextToken();
+    if(CurTok != tok_identifier) return LogError("Expected identifier after for");
+
+    std::string IdName = IdentifierStr;
+    getNextToken();
+    if(CurTok != '=') return LogError("Expected '=' after for");
+    getNextToken();
+
+    auto Start = ParseExpression();
+    if(!Start) return nullptr;
+    if(CurTok != ',') return LogError("Expected ',' after for start value");
+    getNextToken();
+
+    auto End = ParseExpression();
+    if(!End) return nullptr;
+
+    std::unique_ptr<ExprAST> Step;
+    if(CurTok == ',')
+    {
+        getNextToken();
+        Step = ParseExpression();
+        if(!Step) return nullptr;
+    }
+
+    if(CurTok != tok_in) return LogError("Expected 'in' after for");
+    getNextToken();
+
+    auto Body = ParseExpression();
+    if(!Body) return nullptr;
+
+    return std::make_unique<ForExprAST>(IdName, std::move(Start), std::move(End), std::move(Step), std::move(Body));
+}
+
 // primary
 //  ::= identifier
 //  ::= numberexpr
 //  ::= parenexpr
 //  ::= ifexpr
+//  ::= forexpr
 std::unique_ptr<ExprAST> ParsePrimary()
 {
     switch(CurTok)
@@ -123,6 +161,7 @@ std::unique_ptr<ExprAST> ParsePrimary()
         case tok_number : return ParseNumberExpr();
         case '(' : return ParseParenExpr();
         case tok_if : return ParseIfExpr();
+        case tok_for : return ParseForExpr();
     }
 }
 
