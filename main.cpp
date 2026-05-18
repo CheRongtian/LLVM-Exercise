@@ -17,13 +17,32 @@ int main(int argc, char **argv)
     }while(Tok!=tok_eof);
     return 0;
     */
-    
+    for(int i=1; i<argc; i++)
+    {
+        std::string arg = argv[i];
+        if(arg == "off")
+        {
+            EnableOptimization = false;
+            fprintf(stderr, "Optimization disabled.\n");
+        }
+        else
+        {
+            SourceFile = fopen(arg.c_str(), "r");
+            if(!SourceFile)
+            {
+                fprintf(stderr, "Could not open file: %s\n", arg.c_str());
+                return 1;
+            }
+        }
+    }
+
+    /*
     if(argc>1 && std::string(argv[1]) == "off")
     {
         EnableOptimization = false;
         fprintf(stderr, "Optimization disabled.\n");
     }
-
+    */
     InitializeNativeTarget();
     InitializeNativeTargetAsmPrinter();
     InitializeNativeTargetAsmParser();

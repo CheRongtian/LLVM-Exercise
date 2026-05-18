@@ -298,3 +298,234 @@ ready> 1.000000
 89.000000
 Evaluated to 0.000000
 ```
+
+### Self-Defined Operator
+
+run code like:
+```bash
+./run.sh Mandelbrot.kale
+```
+
+You can get like:
+
+```
+ready> ready> Parsed a function defition.define double @"unary!"(double %v) {
+entry:
+  %ifcond = fcmp ueq double %v, 0.000000e+00
+  %. = select i1 %ifcond, double 1.000000e+00, double 0.000000e+00
+  ret double %.
+}
+
+ready> ready> Parsed a function defition.define double @unary-(double %v) {
+entry:
+  %subtmp = fsub double 0.000000e+00, %v
+  ret double %subtmp
+}
+
+ready> ready> Parsed a function defition.define double @"binary>"(double %LHS, double %RHS) {
+entry:
+  %cmptmp = fcmp ult double %RHS, %LHS
+  %booltmp = uitofp i1 %cmptmp to double
+  ret double %booltmp
+}
+
+ready> ready> Parsed a function defition.define double @"binary|"(double %LHS, double %RHS) {
+entry:
+  %ifcond = fcmp ueq double %LHS, 0.000000e+00
+  %ifcond1 = fcmp ueq double %RHS, 0.000000e+00
+  %. = select i1 %ifcond1, double 0.000000e+00, double 1.000000e+00
+  %iftmp5 = select i1 %ifcond, double %., double 1.000000e+00
+  ret double %iftmp5
+}
+
+ready> ready> Parsed a function defition.define double @"binary&"(double %LHS, double %RHS) {
+entry:
+  %unop = call double @"unary!"(double %LHS)
+  %ifcond = fcmp ueq double %unop, 0.000000e+00
+  br i1 %ifcond, label %else, label %ifcont
+
+else:                                             ; preds = %entry
+  %unop1 = call double @"unary!"(double %RHS)
+  %unop2 = call double @"unary!"(double %unop1)
+  br label %ifcont
+
+ifcont:                                           ; preds = %entry, %else
+  %iftmp = phi double [ %unop2, %else ], [ 0.000000e+00, %entry ]
+  ret double %iftmp
+}
+
+ready> ready> Parsed a function defition.define double @"binary="(double %LHS, double %RHS) {
+entry:
+  %cmptmp = fcmp ult double %LHS, %RHS
+  %booltmp = uitofp i1 %cmptmp to double
+  %binop = call double @"binary>"(double %LHS, double %RHS)
+  %binop1 = call double @"binary|"(double %booltmp, double %binop)
+  %unop = call double @"unary!"(double %binop1)
+  ret double %unop
+}
+
+ready> ready> Parsed a function defition.define double @"binary:"(double %x, double %y) {
+entry:
+  ret double %y
+}
+
+ready> ready> Read extern.declare double @putchard(double)
+
+ready> ready> Parsed a function defition.define double @printdensity(double %d) {
+entry:
+  %binop = call double @"binary>"(double %d, double 8.000000e+00)
+  %ifcond = fcmp ueq double %binop, 0.000000e+00
+  br i1 %ifcond, label %else, label %then
+
+then:                                             ; preds = %entry
+  %calltmp = call double @putchard(double 3.200000e+01)
+  br label %ifcont14
+
+else:                                             ; preds = %entry
+  %binop1 = call double @"binary>"(double %d, double 4.000000e+00)
+  %ifcond2 = fcmp ueq double %binop1, 0.000000e+00
+  br i1 %ifcond2, label %else5, label %then3
+
+then3:                                            ; preds = %else
+  %calltmp4 = call double @putchard(double 4.600000e+01)
+  br label %ifcont14
+
+else5:                                            ; preds = %else
+  %binop6 = call double @"binary>"(double %d, double 2.000000e+00)
+  %ifcond7 = fcmp ueq double %binop6, 0.000000e+00
+  br i1 %ifcond7, label %else10, label %then8
+
+then8:                                            ; preds = %else5
+  %calltmp9 = call double @putchard(double 4.300000e+01)
+  br label %ifcont14
+
+else10:                                           ; preds = %else5
+  %calltmp11 = call double @putchard(double 4.200000e+01)
+  br label %ifcont14
+
+ifcont14:                                         ; preds = %then3, %else10, %then8, %then
+  %iftmp15 = phi double [ %calltmp, %then ], [ %calltmp4, %then3 ], [ %calltmp9, %then8 ], [ %calltmp11, %else10 ]
+  ret double %iftmp15
+}
+
+ready> ready> Parsed a function defition.define double @mandelconverger(double %real, double %imag, double %iters, double %creal, double %cimag) {
+entry:
+  %binop = call double @"binary>"(double %iters, double 2.550000e+02)
+  %multmp = fmul double %real, %real
+  %multmp1 = fmul double %imag, %imag
+  %addtmp = fadd double %multmp, %multmp1
+  %binop2 = call double @"binary>"(double %addtmp, double 4.000000e+00)
+  %binop3 = call double @"binary|"(double %binop, double %binop2)
+  %ifcond = fcmp ueq double %binop3, 0.000000e+00
+  br i1 %ifcond, label %else, label %ifcont
+
+else:                                             ; preds = %entry
+  %subtmp = fsub double %multmp, %multmp1
+  %addtmp6 = fadd double %subtmp, %creal
+  %multmp7 = fmul double %real, 2.000000e+00
+  %multmp8 = fmul double %multmp7, %imag
+  %addtmp9 = fadd double %multmp8, %cimag
+  %addtmp10 = fadd double %iters, 1.000000e+00
+  %calltmp = call double @mandelconverger(double %addtmp6, double %addtmp9, double %addtmp10, double %creal, double %cimag)
+  br label %ifcont
+
+ifcont:                                           ; preds = %entry, %else
+  %iftmp = phi double [ %calltmp, %else ], [ %iters, %entry ]
+  ret double %iftmp
+}
+
+ready> ready> Parsed a function defition.define double @mandelconverge(double %real, double %imag) {
+entry:
+  %calltmp = call double @mandelconverger(double %real, double %imag, double 0.000000e+00, double %real, double %imag)
+  ret double %calltmp
+}
+
+ready> ready> Parsed a function defition.define double @mandelhelp(double %xmin, double %xmax, double %xstep, double %ymin, double %ymax, double %ystep) {
+entry:
+  br label %loop
+
+loop:                                             ; preds = %afterloop, %entry
+  %y = phi double [ %ymin, %entry ], [ %nextvar4, %afterloop ]
+  br label %loop1
+
+loop1:                                            ; preds = %loop1, %loop
+  %x = phi double [ %xmin, %loop ], [ %nextvar, %loop1 ]
+  %calltmp = call double @mandelconverge(double %x, double %y)
+  %calltmp2 = call double @printdensity(double %calltmp)
+  %nextvar = fadd double %xstep, %x
+  %cmptmp = fcmp ult double %x, %xmax
+  br i1 %cmptmp, label %loop1, label %afterloop
+
+afterloop:                                        ; preds = %loop1
+  %calltmp3 = call double @putchard(double 1.000000e+01)
+  %binop = call double @"binary:"(double 0.000000e+00, double %calltmp3)
+  %nextvar4 = fadd double %ystep, %y
+  %cmptmp5 = fcmp ult double %y, %ymax
+  br i1 %cmptmp5, label %loop, label %afterloop8
+
+afterloop8:                                       ; preds = %afterloop
+  ret double 0.000000e+00
+}
+
+ready> Parsed a function defition.define double @mandel(double %realstart, double %imagstart, double %realmag, double %imagmag) {
+entry:
+  %multmp = fmul double %realmag, 7.800000e+01
+  %addtmp = fadd double %realstart, %multmp
+  %multmp1 = fmul double %imagmag, 4.000000e+01
+  %addtmp2 = fadd double %imagstart, %multmp1
+  %calltmp = call double @mandelhelp(double %realstart, double %addtmp, double %realmag, double %imagstart, double %addtmp2, double %imagmag)
+  ret double %calltmp
+}
+
+ready> ready> *******************************************************************************
+*******************************************************************************
+****************************************++++++*********************************
+************************************+++++...++++++*****************************
+*********************************++++++++.. ...+++++***************************
+*******************************++++++++++..   ..+++++**************************
+******************************++++++++++.     ..++++++*************************
+****************************+++++++++....      ..++++++************************
+**************************++++++++.......      .....++++***********************
+*************************++++++++.   .            ... .++**********************
+***********************++++++++...                     ++**********************
+*********************+++++++++....                    .+++*********************
+******************+++..+++++....                      ..+++********************
+**************++++++. ..........                        +++********************
+***********++++++++..        ..                         .++********************
+*********++++++++++...                                 .++++*******************
+********++++++++++..                                   .++++*******************
+*******++++++.....                                    ..++++*******************
+*******+........                                     ...++++*******************
+*******+... ....                                     ...++++*******************
+*******+++++......                                    ..++++*******************
+*******++++++++++...                                   .++++*******************
+*********++++++++++...                                  ++++*******************
+**********+++++++++..        ..                        ..++********************
+*************++++++.. ..........                        +++********************
+******************+++...+++.....                      ..+++********************
+*********************+++++++++....                    ..++*********************
+***********************++++++++...                     +++*********************
+*************************+++++++..   .            ... .++**********************
+**************************++++++++.......      ......+++***********************
+****************************+++++++++....      ..++++++************************
+*****************************++++++++++..     ..++++++*************************
+*******************************++++++++++..  ...+++++**************************
+*********************************++++++++.. ...+++++***************************
+***********************************++++++....+++++*****************************
+***************************************++++++++********************************
+*******************************************************************************
+*******************************************************************************
+*******************************************************************************
+*******************************************************************************
+*******************************************************************************
+Evaluated to 0.000000
+ready> ready> ; ModuleID = 'Kaleidoscope'
+source_filename = "Kaleidoscope"
+target datalayout = "e-m:o-p270:32:32-p271:32:32-p272:64:64-i64:64-i128:128-n32:64-S128-Fn32"
+```
+
+In the Kale code part, the last line:
+```kale
+mandel(-2.3, -1.3, 0.05, 0.07);
+```
+can set the parameter for the mandelbrot graph.

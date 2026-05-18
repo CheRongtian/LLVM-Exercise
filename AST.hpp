@@ -6,6 +6,7 @@
 #include <vector>
 #include <utility>
 #include <map>
+#include <cassert>
 
 namespace llvm
 {
@@ -36,6 +37,18 @@ class VariableExprAST : public ExprAST
     std::string Name;
     public:
         VariableExprAST(const std::string &Name) : Name(Name){}
+
+        Value *codegen() override;
+};
+
+class UnaryExprAST : public ExprAST
+{
+    char Opcode;
+    std::unique_ptr<ExprAST> Operand;
+
+    public:
+        UnaryExprAST(char Opcode, std::unique_ptr<ExprAST> Operand) : 
+            Opcode(Opcode), Operand(std::move(Operand)) {}
 
         Value *codegen() override;
 };
@@ -92,14 +105,34 @@ class PrototypeAST
 {
     std::string Name;
     std::vector<std::string> Args;
+    bool IsOperator;
+    unsigned Precedence;
 
     public:
-        PrototypeAST(const std::string &Name, std::vector<std::string> Args) :
-            Name(Name), Args(std::move(Args)){}
+        PrototypeAST(const std::string &Name, std::vector<std::string> Args,
+                     bool IsOperator=false, unsigned Prec=0) :
+            Name(Name), Args(std::move(Args)), IsOperator(IsOperator), Precedence(Prec) {}
         std::string getName()
         {
             return Name;
         }
+        
+        bool isUnaryOp() const 
+        {
+            return IsOperator && Args.size() == 1;
+        }
+
+        bool isBinaryOp() const
+        {
+            return IsOperator && Args.size() == 2;
+        }
+
+        char getOperatorName() const
+        {
+            assert(isUnaryOp() || isBinaryOp());
+            return Name[Name.size()-1];
+        }
+        unsigned getBinaryPrecedence() const {return Precedence;}
 
     Function *codegen();
 };

@@ -48,6 +48,17 @@ Value *VariableExprAST::codegen()
     return V;
 }
 
+Value *UnaryExprAST::codegen()
+{
+    Value *OperandV = Operand->codegen();
+    if(!OperandV) return nullptr;
+
+    Function *F = getFunction(std::string("unary") + Opcode);
+    if(!F) return LogErrorV("Unknown unary operator");
+
+    return Builder->CreateCall(F, OperandV, "unop");
+}
+
 Value *BinaryExprAST::codegen()
 {
     Value *L = LHS->codegen();
@@ -62,8 +73,14 @@ Value *BinaryExprAST::codegen()
         case '<': 
             L = Builder->CreateFCmpULT(L, R, "cmptmp");
             return Builder->CreateUIToFP(L, Type::getDoubleTy(*TheContext), "booltmp");
-        default: return LogErrorV("Invalid binary operator");
+        default: break;
     }
+    
+    Function *F=getFunction(std::string("binary") + Op);
+    assert(F && "binary operator not found!");
+
+    Value *Ops[] = {L,R};
+    return Builder->CreateCall(F, Ops, "binop");
 }
 
 Value *CallExprAST::codegen()
@@ -191,6 +208,7 @@ Function *FunctionAST::codegen()
     if(!TheFunction) TheFunction = Proto->codegen();
     if(!TheFunction) return nullptr;
 
+    if(P.isBinaryOp()) BinopPrecedence[P.getOperatorName()] = P.getBinaryPrecedence();
     BasicBlock *BB = BasicBlock::Create(*TheContext,  "entry",  TheFunction);
     Builder->SetInsertPoint(BB);
 
@@ -207,5 +225,6 @@ Function *FunctionAST::codegen()
     }
 
     TheFunction->eraseFromParent();
+    if(P.isBinaryOp()) BinopPrecedence.erase(P.getOperatorName());
     return nullptr;
 }

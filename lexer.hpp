@@ -5,6 +5,7 @@
 #include <string>
 #include <cctype>
 #include <cstdlib>
+#include <cstdio>
 enum Token
 {
     tok_eof = -1,
@@ -24,11 +25,16 @@ enum Token
 
     // for loop
     tok_for = -9,
-    tok_in = -10
+    tok_in = -10,
+
+    // operator
+    tok_binary = -11,
+    tok_unary = -12
 };
 
 extern std::string IdentifierStr;
 extern double NumVal;
+extern FILE *SourceFile;
 
 int gettok();
 #endif

@@ -28,6 +28,8 @@ std::unique_ptr<ExprAST> ParseForExpr();
 
 std::unique_ptr<ExprAST> ParsePrimary();
 
+std::unique_ptr<ExprAST> ParseUnary();
+
 std::unique_ptr<ExprAST> ParseBinOpRHS(int ExprPrec, std::unique_ptr<ExprAST> LHS);
 
 std::unique_ptr<PrototypeAST> ParsePrototype();

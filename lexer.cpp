@@ -3,17 +3,21 @@
 std::string IdentifierStr;
 double NumVal;
 
+FILE *SourceFile = stdin;
+
 int gettok()
 {
     static int LastChar = ' ';
     // skip white
-    while(isspace(LastChar)) LastChar = getchar();
+    //while(isspace(LastChar)) LastChar = getchar();
+    while(isspace(LastChar)) LastChar = fgetc(SourceFile);
 
     // keyword & identifier
     if(isalpha(LastChar))
     {
         IdentifierStr = LastChar;
-        while(isalnum(LastChar = getchar())) IdentifierStr += LastChar;
+        //while(isalnum(LastChar = getchar())) IdentifierStr += LastChar;
+        while(isalnum(LastChar = fgetc(SourceFile))) IdentifierStr += LastChar;
         // keyword
         if(IdentifierStr == "def") return tok_def;
         if(IdentifierStr == "extern") return tok_extern;
@@ -22,6 +26,8 @@ int gettok()
         if(IdentifierStr == "else") return tok_else;
         if(IdentifierStr == "for") return tok_for;
         if(IdentifierStr == "in") return tok_in;
+        if(IdentifierStr == "binary") return tok_binary;
+        if(IdentifierStr == "unary") return tok_unary;
         
         // identifier
         return tok_identifier; 
@@ -34,7 +40,8 @@ int gettok()
         do
         {
             NumStr += LastChar;
-            LastChar = getchar(); 
+            //LastChar = getchar(); 
+            LastChar = fgetc(SourceFile);
         }while(isdigit(LastChar) || LastChar == '.');
 
         NumVal = strtod(NumStr.c_str(), 0);
@@ -44,7 +51,8 @@ int gettok()
     // comment
     if(LastChar == '#')
     {
-        do LastChar = getchar();
+        //do LastChar = getchar();
+        do LastChar = fgetc(SourceFile);
         while(LastChar != EOF && LastChar != '\n' && LastChar != '\r');
 
         if(LastChar != EOF) return gettok();
@@ -55,6 +63,7 @@ int gettok()
 
     // other character
     int ThisChar = LastChar;
-    LastChar = getchar();
+    //LastChar = getchar();
+    LastChar = fgetc(SourceFile);
     return ThisChar;
 }
