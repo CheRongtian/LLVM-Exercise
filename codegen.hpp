@@ -25,6 +25,8 @@
 #include "llvm/Transforms/Scalar/Reassociate.h"
 #include "llvm/Transforms/Scalar/SimplifyCFG.h"
 
+#include "llvm/Transforms/Utils/Mem2Reg.h"
+
 #include "KaleidoscopeJIT.hpp"
 
 using namespace llvm;
@@ -33,7 +35,7 @@ using namespace llvm::orc;
 extern std::unique_ptr<LLVMContext> TheContext;
 extern std::unique_ptr<Module> TheModule;
 extern std::unique_ptr<IRBuilder<>> Builder;
-extern std::map<std::string, Value*> NamedValues;
+extern std::map<std::string, AllocaInst*> NamedValues;
 
 extern std::unique_ptr<FunctionPassManager> TheFPM;
 extern std::unique_ptr<LoopAnalysisManager> TheLAM;

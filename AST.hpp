@@ -37,7 +37,10 @@ class VariableExprAST : public ExprAST
     std::string Name;
     public:
         VariableExprAST(const std::string &Name) : Name(Name){}
-
+        const std::string &getName() const
+        {
+            return Name;
+        }
         Value *codegen() override;
 };
 
@@ -97,6 +100,18 @@ class ForExprAST : public ExprAST
         ForExprAST(const std::string &VarName, std::unique_ptr<ExprAST> Start, std::unique_ptr<ExprAST> End,
                    std::unique_ptr<ExprAST> Step, std::unique_ptr<ExprAST> Body) : 
             VarName(VarName), Start(std::move(Start)), End(std::move(End)), Step(std::move(Step)), Body(std::move(Body)){}
+        
+        Value *codegen() override;
+};
+
+class VarExprAST : public ExprAST
+{
+    std::vector<std::pair<std::string, std::unique_ptr<ExprAST>>> VarNames;
+    std::unique_ptr<ExprAST> Body;
+
+    public:
+        VarExprAST(std::vector<std::pair<std::string, std::unique_ptr<ExprAST>>> VarNames, std::unique_ptr<ExprAST> Body) : 
+            VarNames(std::move(VarNames)), Body(std::move(Body)) {}
         
         Value *codegen() override;
 };

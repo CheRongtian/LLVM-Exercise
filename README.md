@@ -529,3 +529,65 @@ In the Kale code part, the last line:
 mandel(-2.3, -1.3, 0.05, 0.07);
 ```
 can set the parameter for the mandelbrot graph.
+
+### Local Variable
+run
+```bash
+./run.sh Fib.kale
+```
+The final line in the file
+```kale
+fibi(10);
+```
+you can modify the parameter by yourself
+
+The result looks like:
+```
+ready> ready> Parsed a function defition.define double @"binary:"(double %x, double %y) {
+entry:
+  ret double %y
+}
+
+ready> ready> Parsed a function defition.define double @fib(double %x) {
+entry:
+  %cmptmp = fcmp ult double %x, 3.000000e+00
+  br i1 %cmptmp, label %ifcont, label %else
+
+else:                                             ; preds = %entry
+  %subtmp = fadd double %x, -1.000000e+00
+  %calltmp = call double @fib(double %subtmp)
+  %subtmp5 = fadd double %x, -2.000000e+00
+  %calltmp6 = call double @fib(double %subtmp5)
+  %addtmp = fadd double %calltmp, %calltmp6
+  br label %ifcont
+
+ifcont:                                           ; preds = %entry, %else
+  %iftmp = phi double [ %addtmp, %else ], [ 1.000000e+00, %entry ]
+  ret double %iftmp
+}
+
+ready> ready> Parsed a function defition.define double @fibi(double %x) {
+entry:
+  br label %loop
+
+loop:                                             ; preds = %loop, %entry
+  %a.0 = phi double [ 1.000000e+00, %entry ], [ %b.0, %loop ]
+  %b.0 = phi double [ 1.000000e+00, %entry ], [ %addtmp, %loop ]
+  %i.0 = phi double [ 3.000000e+00, %entry ], [ %nextvar, %loop ]
+  %addtmp = fadd double %a.0, %b.0
+  %binop = call double @"binary:"(double %addtmp, double %b.0)
+  %binop6 = call double @"binary:"(double %binop, double %addtmp)
+  %cmptmp = fcmp ult double %i.0, %x
+  %nextvar = fadd double %i.0, 1.000000e+00
+  br i1 %cmptmp, label %loop, label %afterloop
+
+afterloop:                                        ; preds = %loop
+  %binop11 = call double @"binary:"(double 0.000000e+00, double %addtmp)
+  ret double %binop11
+}
+
+ready> ready> Evaluated to 55.000000
+ready> ready> ; ModuleID = 'Kaleidoscope'
+source_filename = "Kaleidoscope"
+target datalayout = "e-m:o-p270:32:32-p271:32:32-p272:64:64-i64:64-i128:128-n32:64-S128-Fn32"
+```

@@ -20,6 +20,7 @@ void InitializeModuleAndManagers()
     TheSI = std::make_unique<StandardInstrumentations>(*TheContext, true);
     TheSI->registerCallbacks(*ThePIC, TheMAM.get());
 
+    TheFPM->addPass(PromotePass()); // Mem2Reg
     TheFPM->addPass(InstCombinePass());
     TheFPM->addPass(ReassociatePass());
     TheFPM->addPass(GVNPass());

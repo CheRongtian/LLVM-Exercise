@@ -26,6 +26,8 @@ std::unique_ptr<ExprAST> ParseIfExpr();
 
 std::unique_ptr<ExprAST> ParseForExpr();
 
+std::unique_ptr<ExprAST> ParseVarExpr();
+
 std::unique_ptr<ExprAST> ParsePrimary();
 
 std::unique_ptr<ExprAST> ParseUnary();
